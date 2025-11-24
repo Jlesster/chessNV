@@ -37,6 +37,7 @@ public class Colours {
       int r = Integer.parseInt(hex.substring(0, 2), 16);
       int g = Integer.parseInt(hex.substring(2, 4), 16);
       int b = Integer.parseInt(hex.substring(4, 6), 16);
+      int a = Integer.parseInt(hex.substring(6, 8), 16);
       return new Color(r, g, b, a);
     } else {
       throw new IllegalArgumentException("Invalid hex string");
