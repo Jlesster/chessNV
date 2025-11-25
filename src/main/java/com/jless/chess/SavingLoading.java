@@ -1,6 +1,7 @@
 package com.jless.chess;
 
 import java.nio.file.Path;
+import java.nio.file.Files;
 import java.io.File;
 
 public class SavingLoading {
@@ -31,7 +32,7 @@ public class SavingLoading {
       sb.append("]\n");
       sb.append("}\n");
 
-      File.writeString(savegame, sb.toString());
+      Files.writeString(savegame, sb.toString());
 
       System.out.println("Saved Game");
     } catch (Exception e) {
@@ -41,11 +42,11 @@ public class SavingLoading {
   }
   public void loadGame() {
     try {
-      if (!File.exists(savegame)) {
+      if (!Files.exists(savegame)) {
         System.err.println("No save found");
         return;
       }
-      String json = File.readString(savegame);
+      String json = Files.readString(savegame);
       if (json.contains("\"whiteTurn\": true")) {
         Board.whiteTurn = true;
       } else if (json.contains("\"whiteTurn\": false")) {

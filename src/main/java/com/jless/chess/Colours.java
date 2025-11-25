@@ -9,13 +9,11 @@ import com.fasterxml.jackson.databind.*;
 public class Colours {
   private static final Map<String, Color> colors = new HashMap<>();
   static {
-    loadFromJSON("colours/Colours.json");
+    loadFromJSON("colours/Colors.json");
   }
   public static void loadFromJSON(String path) {
     try {
-      InputStream in = Colours.class;
-        in.getClassLoader();
-        in.getResourceAsStream(path);
+      InputStream in = Colours.class.getClassLoader().getResourceAsStream(path);
       if (in == null) {
         System.err.println("[Colours] failed to load resource" + path);
         return;

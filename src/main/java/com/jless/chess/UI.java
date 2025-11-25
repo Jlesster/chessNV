@@ -369,6 +369,4 @@ public void paintSquare(Graphics g) {
       e.printStackTrace();
     }
   }
-
-
 }

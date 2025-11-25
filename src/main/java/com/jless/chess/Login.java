@@ -4,7 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
+import java.nio.file.*;
 
 public class Login extends JDialog {
   public boolean loggedIn = false;
@@ -12,7 +14,7 @@ public class Login extends JDialog {
   private int minCharCreds = 3;
 
   private HashMap<String, String> users = new HashMap<>();
-  private String file = "resources/accounts/accounts.txt";
+  private Path accoutnsFile = Paths.get(System.getProperty("user.home"), ".chesnv", "accounts.txt");
 
   public void register(String username, String password) {
     if (!username.isBlank() && password.isBlank()) {
@@ -34,26 +36,30 @@ public class Login extends JDialog {
     }
   }
   private void loadUsers() {
-    try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-      String line;
-      while ((line = br.readLine()) != null) {
-        String[] user = line.split(" : ");
-        if (user.length == 2) users.put(user[0], user[1]);
+    try {
+      Files.createDirectories(accoutnsFile.getParent());
+      if (!Files.exists(accoutnsFile)) {
+        Files.createFile(accoutnsFile);
+      }
+      users.clear();
+      for (String line : Files.readAllLines(accoutnsFile)) {
+        String[] parts = line.split(" : ");
+        if (parts.length == 2) users.put(parts[0], parts[1]);
       }
     } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+        throw new RuntimeException(e);
+      }
   }
   private void saveUsers() {
-    try (PrintWriter out = new PrintWriter(file)) {
-      for (Map.Entry<String, String> user : users.entrySet()) {
-        out.println(user.getKey() + " : " + user.getValue());
+    try {
+      List<String> lines = new ArrayList<>();
+      for (Map.Entry<String, String> entry : users.entrySet()) {
+        lines.add(entry.getKey() + " : " + entry.getValue());
       }
-    } catch (FileNotFoundException e) {
-        throw new RuntimeException(e);
+      Files.write(accoutnsFile, lines);
     } catch (IOException e) {
         throw new RuntimeException(e);
-    }
+      }
   }
   public Login(JDialog parent) {
     super(parent, "Login", true);
@@ -91,9 +97,9 @@ public class Login extends JDialog {
     c.anchor = GridBagConstraints.WEST;
     panel.add(username, c);
 
-    c.gridx = 1;
+    c.gridx = 2;
     c.gridy = 2;
-    c.anchor = GridBagConstraints.BOTH;
+    c.fill = GridBagConstraints.BOTH;
     panel.add(loginButton, c);
 
     c.gridx = 0;
@@ -104,6 +110,7 @@ public class Login extends JDialog {
     c.gridx = 1;
     c.gridy = 3;
     panel.add(cancelButton, c);
+
 
     cancelButton.setBackground(Colours.getColor("subtext1"));
     loginButton.setBackground(Colours.getColor("subtext1"));
