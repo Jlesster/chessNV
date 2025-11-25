@@ -179,7 +179,72 @@ class Board extends JPanel {
     String[] colors = {"BLK", "WHT"};
 
     for (String color : colors) {
-
+      for (String piece : pieces) {
+        String path = "resources/sprites";
+        try {
+          BufferedImage img = ImageIO.read(new File(path));
+          pieceCache.put(piece + color, img);
+        } catch (IOException e) {
+            System.err.println("Error loading image " + path);
+        }
+      }
     }
+    addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        allowGlow = true;
+        int col = e.getX() / squareW;
+        int row = e.getY() / squareH;
+        String selected = layout[row][col];
+        boolean isWhite = Character.isUpperCase(selected.charAt(0));
+        if (selected == null)
+          return;
+        if ((whiteTurn && isWhite) || (!whiteTurn && isWhite)) {
+          return;
+        }
+        draggedPiece = selected;
+        layout[row][col] = null;
+        dragStartCol = col;
+        dragStartRow = row;
+        pieceX = e.getX();
+        pieceY = e.getY();
+
+        avaliableMoves = getAvaliableMoves(row, col, draggedPiece)
+      }
+      @Override
+      public void mouseReleased(MouseEvent e) {
+        allowGlow = false;
+        if (draggedPiece != null) {
+          int col = e.getX() / squareW;
+          int row = e.getY() / squareH;
+          boolean validMove = false;
+
+          for (Point move : avaliableMoves) {
+            if (move.x == col && move.y == row) {
+              validMove = true;
+               break;
+            }
+          }
+          if (validMove) {
+            layout[row][col] = draggedPiece;
+            whiteTurn = !whiteTurn;
+          } else {
+            layout[dragStartRow][dragStartCol] = draggedPiece;
+          }
+          avaliableMoves.clear();
+          draggedPiece = null;
+          repaint();
+        }
+      }
+    });
+    addMouseMotionListener(new MouseAdapter() {
+      @Override
+      public void mouseDragged(MouseEvent e) {
+        if (draggedPiece != null) {
+          pieceX = e.getX();
+          pieceY = e.getY();
+          repaint();
+        }
+      }
+    });
   }
 }
