@@ -10,11 +10,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import static javax.imageio.ImageIO.read;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class UI extends JFrame {
   public void body() {
     StartMenu startMenu = new StartMenu(this);
     Login login = new Login(startMenu);
+    SavingLoading sl = new SavingLoading();
     login.setVisible(true);
     if (login.loggedIn) {
       startMenu.setVisible(true);
@@ -32,7 +35,7 @@ public class UI extends JFrame {
 
       @Override
       public void windowClosing(java.awt.event.WindowEvent wE) {
-        if (Board.layout != null) sl.saveGame;
+        if (Board.layout != null) sl.saveGame();
         System.exit(0);
       }
 
@@ -46,10 +49,14 @@ public class UI extends JFrame {
 
 class Board extends JPanel {
   private final java.util.Map<String, BufferedImage> pieceCache = new java.util.HashMap<>();
+  private AtomicReference<Double> alpha = new AtomicReference<>(0.1);
   private String draggedPiece = null;
   public static boolean whiteTurn = true;
   private int dragStartCol = -1;
   private int dragStartRow = -1;
+  private boolean allowGlow = true;
+  private double glowPhase = 0;
+  private Timer glowTimer;
   private int squareW;
   private int squareH;
   private int pieceX;
@@ -180,7 +187,7 @@ class Board extends JPanel {
 
     for (String color : colors) {
       for (String piece : pieces) {
-        String path = "resources/sprites";
+        String path = "target/classes/sprites";
         try {
           BufferedImage img = ImageIO.read(new File(path));
           pieceCache.put(piece + color, img);
@@ -208,7 +215,7 @@ class Board extends JPanel {
         pieceX = e.getX();
         pieceY = e.getY();
 
-        avaliableMoves = getAvaliableMoves(row, col, draggedPiece)
+        avaliableMoves = getAvaliableMoves(row, col, draggedPiece);
       }
       @Override
       public void mouseReleased(MouseEvent e) {
@@ -247,4 +254,121 @@ class Board extends JPanel {
       }
     });
   }
+  public static final String[][] layout = {
+    { "r",  "k",  "b",  "q",  "i",  "b",  "k",  "r"   },
+    { "p",  "p",  "p",  "p",  "p",  "p",  "p",  "p"   },
+    { null, null, null, null, null, null, null, null, },
+    { null, null, null, null, null, null, null, null, },
+    { null, null, null, null, null, null, null, null, },
+    { null, null, null, null, null, null, null, null, },
+    { "P",  "P",  "P",  "P",  "P",  "P",  "P",  "P"   },
+    { "R",  "K",  "B",  "I",  "Q",  "B",  "K",  "R"   },
+  };
+  private String getPieceName(char type) {
+    return switch (type) {
+        case 'B' -> "Bishop";
+        case 'K' -> "Knight";
+        case 'Q' -> "Queen";
+        case 'R' -> "Rook";
+        case 'P' -> "Pawn";
+        case 'I' -> "King";
+        default -> "Unknown";
+    };
+  }
+  public void paintPieces(Graphics g) throws IOException {
+    int rows = 8;
+    int cols = 8;
+    double scale = 0.9;
+    int pieceW = (int) (squareW * scale);
+    int pieceH = (int) (squareH * scale);
+    int offsetX = (squareW - pieceW) / 2;
+    int offsetY = (squareH - pieceW) / 2;
+
+    for (int row = 0; row < rows; row++) {
+      for (int col = 0; col < cols; col++) {
+        String piece = layout[row][col];
+        if (piece == null)
+          continue;
+
+        String color = Character.isUpperCase(piece.charAt(0)) ? "WHT" : "BLK";
+        char type = Character.toUpperCase(piece.charAt(0));
+        String filename = "resources/sprites/" + getPieceName(type) + color + ".png";
+        BufferedImage pieceImg = pieceCache.get(getPieceName(type) + color);
+
+        if(pieceImg == null) {
+          System.err.println("Missing from cache " + getPieceName(type));
+          continue;
+        }
+        int x = col * squareW + offsetX;
+        int y = row * squareH + offsetY;
+        g.drawImage(pieceImg, x, y, pieceW, pieceH, this);
+      }
+    }
+    if (draggedPiece != null) {
+      String color = Character.isUpperCase(draggedPiece.charAt(0)) ? "WHT" : "BLK";
+      char type = Character.toUpperCase(draggedPiece.charAt(0));
+      BufferedImage pieceImg = pieceCache.get(getPieceName(type) + color);
+
+      if (pieceImg != null) {
+        pieceW = (int) (squareW * scale);
+        pieceH = (int) (squareH * scale);
+        g.drawImage(pieceImg, pieceX - pieceW / 2, pieceY - pieceH / 2, this);
+    }
+  }
+}
+public void paintSquare(Graphics g) {
+    int rows = 8;
+    int cols = 8;
+
+    for (int row = 0; row < rows; row++) {
+      for (int col = 0; col < cols; col++) {
+        int x = (col * squareW);
+        int y = (row * squareH);
+
+        if ((row + col) % 2 ==0) {
+          g.setColor(Colours.getColor("mantle"));
+          g.fillRect(x, y, squareW, squareH);
+        } else {
+          g.setColor(Colours.getColor("subtext1"));
+          g.drawRect(x, y, squareW, squareH);
+        }
+      }
+    }
+  }
+  private void paintGlow(Graphics g) {
+    Graphics2D g2d = (Graphics2D) g;
+    double glow = (Math.sin(glowPhase) +1);
+    double eased = 0.3 + (0.7 * glow);
+
+    int glowSize = (int) (squareW * 0.8 + 10 * glow);
+    Color glowColor = Colours.getColor("green");
+    g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+
+    for (Point move : avaliableMoves) {
+      int x = move.x * squareW + (squareW - glowSize) / 2;
+      int y = move.y * squareH + (squareH - glowSize) / 2;
+      GradientPaint gradient = new GradientPaint(
+        x, y, new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), 0),
+        x + glowSize, y + glowSize, glowColor, true);
+      new javax.swing.Timer(120, t -> {
+        alpha.updateAndGet(v -> Math.min(120, + 0.05));
+        repaint();
+      }).start();
+      g2d.setColor(new Color(166, 224, 161, alpha.get().intValue()));
+      g2d.fillRect(x, y, glowSize, glowSize);
+    }
+  }
+  @Override
+  public void paintComponent(Graphics g) {
+    super.paintComponent(g);
+    paintSquare(g);
+    paintGlow(g);
+    try {
+      paintPieces(g);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+
 }

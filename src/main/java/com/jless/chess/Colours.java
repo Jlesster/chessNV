@@ -9,13 +9,20 @@ import com.fasterxml.jackson.databind.*;
 public class Colours {
   private static final Map<String, Color> colors = new HashMap<>();
   static {
-    loadFromJSON("resources/colours/Colors.json");
+    loadFromJSON("colours/Colours.json");
   }
   public static void loadFromJSON(String path) {
     try {
+      InputStream in = Colours.class;
+        in.getClassLoader();
+        in.getResourceAsStream(path);
+      if (in == null) {
+        System.err.println("[Colours] failed to load resource" + path);
+        return;
+      }
       ObjectMapper mapper = new ObjectMapper();
       Map<String, String> map = mapper.readValue(
-        new File(path),
+        in,
         mapper.getTypeFactory().constructMapType(Map.class, String.class, String.class)
       );
       for (Map.Entry<String, String> entry : map.entrySet()) {

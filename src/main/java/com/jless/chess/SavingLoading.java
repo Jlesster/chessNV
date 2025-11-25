@@ -4,10 +4,12 @@ import java.nio.file.Path;
 import java.io.File;
 
 public class SavingLoading {
-  Path savegame = java.nio.file.Path.of("resources/saveGames/saveGame.json");
+  Path savegame = Path.of(System.getProperty("user.home"), ".chessnv", "saveGame.json");
 
   public void saveGame() {
     try {
+      Files.createDirectories(savegame.getParent());
+
       StringBuilder sb = new StringBuilder();
 
       sb.append("\n");
@@ -29,10 +31,8 @@ public class SavingLoading {
       sb.append("]\n");
       sb.append("}\n");
 
-      java.nio.file.Files.writeString(
-        java.nio.file.Path.of("resources/saveGames/saveGame.json"),
-        sb.toString()
-      );
+      File.writeString(savegame, sb.toString());
+
       System.out.println("Saved Game");
     } catch (Exception e) {
       System.out.println("Error saving game");
@@ -41,9 +41,11 @@ public class SavingLoading {
   }
   public void loadGame() {
     try {
-      String json = java.nio.file.Files.readString(
-        java.nio.file.Path.of("resources/saveGames/saveGame.json")
-      );
+      if (!File.exists(savegame)) {
+        System.err.println("No save found");
+        return;
+      }
+      String json = File.readString(savegame);
       if (json.contains("\"whiteTurn\": true")) {
         Board.whiteTurn = true;
       } else if (json.contains("\"whiteTurn\": false")) {
