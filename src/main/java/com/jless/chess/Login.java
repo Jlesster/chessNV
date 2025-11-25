@@ -72,7 +72,7 @@ public class Login extends JDialog {
     JPanel panel = new JPanel(new GridBagLayout());
 
     GridBagConstraints c = new GridBagConstraints();
-    c.insets = new Insets(2, 2, 2, 2);
+    c.insets = new Insets(5, 5, 5, 5);
 
     panel.setBackground(Colours.getColor("mantle"));
 
@@ -97,8 +97,16 @@ public class Login extends JDialog {
     c.anchor = GridBagConstraints.WEST;
     panel.add(username, c);
 
-    c.gridx = 2;
+    c.gridx = 1;
     c.gridy = 2;
+    c.anchor = GridBagConstraints.WEST;
+    panel.add(password, c);
+
+    c.gridx = 2;
+    c.gridy = 0;
+    c.gridheight = 4;
+    c.weightx = 1;
+    c.weighty = 1;
     c.fill = GridBagConstraints.BOTH;
     panel.add(loginButton, c);
 
@@ -122,7 +130,7 @@ public class Login extends JDialog {
     registerButton.setFocusable(false);
     cancelButton.setFocusable(false);
 
-    this.setSize(400, 120);
+    this.setSize(400, 140);
     this.setLocationRelativeTo(null);
     this.setResizable(false);
 
