@@ -29,6 +29,10 @@ public class StartMenu extends JDialog {
     c.gridy = 1;
     contentPane.add(continueButton, c);
 
+    c.gridx = 0;
+    c.gridy = 3;
+    contentPane.add(exitButton, c);
+
     setSize(500, 500);
     setResizable(false);
     setLocationRelativeTo(null);

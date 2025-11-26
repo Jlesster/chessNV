@@ -1,27 +1,26 @@
 .PHONY: all clean test maven_build_and_run maven_build maven_run
 
-# ================================
-# Auto-detect the main class
-# ================================
-# Try with xmllint (best and safest)
-MAIN_CLASS := $(shell xmllint --xpath "string(//mainClass)" pom.xml 2>/dev/null)
-
-# If xmllint failed, fall back to grep
+MAIN_CLASS = $(shell xmllint --xpath "string(//mainClass)" pom.xml 2>/dev/null)
 ifeq ($(MAIN_CLASS),)
-MAIN_CLASS := $(shell grep -oPm1 "(?<=<mainClass>)[^<]+" pom.xml)
+MAIN_CLASS = $(shell grep -oPm1 "(?<=<mainClass>)[^<]+" pom.xml)
 endif
-
-# Safety fallback (avoid empty java commands)
 ifeq ($(MAIN_CLASS),)
-$(warning No <mainClass> found in pom.xml! Set MAIN_CLASS manually.)
-MAIN_CLASS := com.jless.chess.App
+$(warning No <mainClass> found! Defaulting.)
+MAIN_CLASS = com.jless.chess.App
 endif
 
 
-# ================================
-# Required default targets
-# ================================
-all: maven_build
+maven_build_and_run:
+	mvn -q package
+	$(MVN_RUN)
+
+maven_build:
+	mvn -q package
+
+maven_run:
+	$(MVN_RUN)
+all:
+	maven_build
 
 clean:
 	mvn -q clean
@@ -29,16 +28,19 @@ clean:
 test:
 	mvn -q test
 
+MVN_RUN := mvn -q exec:java -Dexec.mainClass=$(MAIN_CLASS)
+
+# ================================
+# Auto-detect the main class
+# ================================
+# Try with xmllint (best and safest)
+
+
+# ================================
+# Required default targets
+# ================================
+
 
 # ================================
 # Compiler.nvim integration targets
 # ================================
-maven_build_and_run:
-	mvn -q package
-	mvn -q exec:java -Dexec.mainClass=$(MAIN_CLASS)
-
-maven_build:
-	mvn -q package
-
-maven_run:
- mvn -q exec:java -Dexec.mainClass=$(MAIN_CLASS)

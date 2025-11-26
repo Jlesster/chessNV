@@ -17,7 +17,7 @@ public class Login extends JDialog {
   private Path accoutnsFile = Paths.get(System.getProperty("user.home"), ".chesnv", "accounts.txt");
 
   public void register(String username, String password) {
-    if (!username.isBlank() && password.isBlank()) {
+    if (!username.isBlank() && !password.isBlank()) {
       users.put(username, password);
       saveUsers();
       dispose();
@@ -125,14 +125,14 @@ public class Login extends JDialog {
 
     getContentPane().add(panel, BorderLayout.CENTER);
 
-    username.requestFocusInWindow();
-    loginButton.setFocusable(false);
     registerButton.setFocusable(false);
     cancelButton.setFocusable(false);
+    username.requestFocusInWindow();
+    loginButton.setFocusable(false);
 
-    this.setSize(400, 140);
     this.setLocationRelativeTo(null);
     this.setResizable(false);
+    this.setSize(400, 140);
 
     loadUsers();
     guestAccount();
@@ -144,15 +144,21 @@ public class Login extends JDialog {
       }
     });
     registerButton.addActionListener(e -> {
+      register(username.getText(), String.valueOf(password.getPassword()));
+      loggedIn = true;
+      dispose();
+
+    });
+    cancelButton.addActionListener(e -> {
+      loggedIn = false;
+      System.exit(0);
+      dispose();
+    });
+    password.addActionListener(e -> {
       if (authenticate(username.getText(), String.valueOf(password.getPassword()))) {
         loggedIn = true;
         dispose();
       }
-    });
-    cancelButton.addActionListener(e -> {
-      System.exit(0);
-      dispose();
-      loggedIn = false;
     });
   }
 }
