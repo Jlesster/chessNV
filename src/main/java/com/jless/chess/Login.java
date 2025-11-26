@@ -14,7 +14,7 @@ public class Login extends JDialog {
   private int minCharCreds = 3;
 
   private HashMap<String, String> users = new HashMap<>();
-  private Path accoutnsFile = Paths.get(System.getProperty("user.home"), ".chesnv", "accounts.txt");
+  private Path accountsFile = Paths.get(System.getProperty("user.home"), ".chesnv", "accounts.txt");
 
   public void register(String username, String password) {
     if (!username.isBlank() && !password.isBlank()) {
@@ -37,12 +37,12 @@ public class Login extends JDialog {
   }
   private void loadUsers() {
     try {
-      Files.createDirectories(accoutnsFile.getParent());
-      if (!Files.exists(accoutnsFile)) {
-        Files.createFile(accoutnsFile);
+      Files.createDirectories(accountsFile.getParent());
+      if (!Files.exists(accountsFile)) {
+        Files.createFile(accountsFile);
       }
       users.clear();
-      for (String line : Files.readAllLines(accoutnsFile)) {
+      for (String line : Files.readAllLines(accountsFile)) {
         String[] parts = line.split(" : ");
         if (parts.length == 2) users.put(parts[0], parts[1]);
       }
@@ -56,7 +56,7 @@ public class Login extends JDialog {
       for (Map.Entry<String, String> entry : users.entrySet()) {
         lines.add(entry.getKey() + " : " + entry.getValue());
       }
-      Files.write(accoutnsFile, lines);
+      Files.write(accountsFile, lines);
     } catch (IOException e) {
         throw new RuntimeException(e);
       }

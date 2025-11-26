@@ -1,4 +1,7 @@
-.PHONY: all clean test maven_build_and_run maven_build maven_run
+
+##COMPILER_NVIM_STOP
+
+.PHONY: all clean test run
 
 MAIN_CLASS = $(shell xmllint --xpath "string(//mainClass)" pom.xml 2>/dev/null)
 ifeq ($(MAIN_CLASS),)
@@ -9,18 +12,12 @@ $(warning No <mainClass> found! Defaulting.)
 MAIN_CLASS = com.jless.chess.App
 endif
 
+MVN_RUN := mvn -q exec:java -Dexec.mainClass=$(MAIN_CLASS)
 
-maven_build_and_run:
-	mvn -q package
-	$(MVN_RUN)
-
-maven_build:
-	mvn -q package
-
-maven_run:
-	$(MVN_RUN)
 all:
-	maven_build
+	mvn -q clean
+	mvn -q package
+	$(MVN_RUN)
 
 clean:
 	mvn -q clean
@@ -28,7 +25,10 @@ clean:
 test:
 	mvn -q test
 
-MVN_RUN := mvn -q exec:java -Dexec.mainClass=$(MAIN_CLASS)
+run:
+	$(MVN_RUN)
+
+
 
 # ================================
 # Auto-detect the main class
