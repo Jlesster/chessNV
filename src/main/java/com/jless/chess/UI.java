@@ -23,16 +23,9 @@ public class UI extends JFrame {
       startMenu.setVisible(true);
     }
     if (login.loggedIn && startMenu.gameDecided) {
-      this.setSize(801, 800);
-      add(new Board(this.getWidth(), this.getHeight()));
-      this.setLocationRelativeTo(null);
-      this.setResizable(false);
-      this.setVisible(true);
-      repaint();
+      startGame();
     }
-    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.addWindowListener(new java.awt.event.WindowAdapter() {
-
       @Override
       public void windowClosing(java.awt.event.WindowEvent wE) {
         if (Board.layout != null) sl.saveGame();
@@ -41,7 +34,16 @@ public class UI extends JFrame {
 
     });
   }
-
+  public void startGame(){
+    this.add(new Board(this.getWidth(), this.getHeight()));
+    this.setVisible(true);
+    this.setSize(800, 800);
+    this.setLocationRelativeTo(null);
+    this.setResizable(false);
+    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    revalidate();
+    repaint();
+  }
   public void runtime() {
     body();
   }
