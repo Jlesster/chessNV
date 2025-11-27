@@ -188,10 +188,24 @@ class Board extends JPanel {
     squareW = fW / 8;
     squareH = fH / 8;
 
+    JMenuBar menu = new JMenuBar();
+    JMenu session = new JMenu("Session");
+    JMenuItem exit = new JMenuItem("Exit and Save");
+    JMenuItem glow = new JMenuItem("Enable Glow");
+    session.add(exit, glow);
+    menu.add(session);
 
     this.setBackground(Colours.getColor("subtext2"));
     String[] pieces = {"Pawn", "Rook", "Bishop", "Queen", "King", "Knight"};
     String[] colors = {"BLK", "WHT"};
+
+    glowTimer = new Timer(30, e -> {
+      glowPhase += 0.15;   // controls speed of pulsing
+      if (glowPhase > Math.PI * 2) glowPhase = 0;
+
+      repaint();
+    });
+    glowTimer.start();
 
     for (String color : colors) {
       for (String piece : pieces) {
@@ -347,25 +361,19 @@ public void paintSquare(Graphics g) {
   }
   private void paintGlow(Graphics g) {
     Graphics2D g2d = (Graphics2D) g;
-    double glow = (Math.sin(glowPhase) + 1);
+    double glow = (Math.sin(glowPhase) + 1) / 2;
     double eased = 0.3 + (0.7 * glow);
 
     int glowSize = (int) (squareW * 0.8 + 10 * glow);
     Color glowColor = Colours.getColor("green");
-    g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+    g2d.setComposite(AlphaComposite.SrcOver);
 
     for (Point move : avaliableMoves) {
+      int alphaValue = (int)(10 + glow * 100);
       int x = move.x * squareW + (squareW - glowSize) / 2;
       int y = move.y * squareH + (squareH - glowSize) / 2;
-      GradientPaint gradient = new GradientPaint(
-        x, y, new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), 0),
-        x + glowSize, y + glowSize, glowColor, true);
-
-      new javax.swing.Timer(120, t -> {
-        alpha.updateAndGet(v -> Math.min(120, + 0.05));
-        repaint();
-      }).start();
-      g2d.setColor(new Color(166, 224, 161, alpha.get().intValue()));
+      Color guide = new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), alphaValue);
+      g2d.setColor(guide);
       g2d.fillRect(x, y, glowSize, glowSize);
     }
   }
