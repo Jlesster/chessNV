@@ -18,13 +18,17 @@ public class UI extends JFrame {
     StartMenu startMenu = new StartMenu(this);
     Login login = new Login(startMenu);
     SavingLoading sl = new SavingLoading();
+
     login.setVisible(true);
     if (login.loggedIn) {
       startMenu.setVisible(true);
+      if (startMenu.gameDecided) {
+        startGame();
+      }
     }
-    if (login.loggedIn && startMenu.gameDecided) {
-      startGame();
-    }
+    // if (login.loggedIn && startMenu.gameDecided) {
+    //   startGame();
+    // }
     this.addWindowListener(new java.awt.event.WindowAdapter() {
       @Override
       public void windowClosing(java.awt.event.WindowEvent wE) {
@@ -54,8 +58,8 @@ class Board extends JPanel {
   private AtomicReference<Double> alpha = new AtomicReference<>(1.1);
   private String draggedPiece = null;
   public static boolean whiteTurn = true;
-  private int dragStartCol = 0;
-  private int dragStartRow = 0;
+  private int dragStartCol = -1;
+  private int dragStartRow = -1;
   private boolean allowGlow = true;
   private double glowPhase = 1;
   private Timer glowTimer;
@@ -68,13 +72,13 @@ class Board extends JPanel {
 
   private java.util.List<Point> getAvaliableMoves(int row, int col, String piece) {
     java.util.List<Point> moves = new ArrayList<>();
-    char type = Character.toUpperCase(piece.charAt(1));
-    boolean isWhite = Character.isUpperCase(piece.charAt(1));
+    char type = Character.toUpperCase(piece.charAt(0));
+    boolean isWhite = Character.isUpperCase(piece.charAt(0));
 
     if (piece.equalsIgnoreCase("P")) {
-      int direction = Character.isUpperCase(piece.charAt(1)) ? -1 : 1;
+      int direction = Character.isUpperCase(piece.charAt(0)) ? -1 : 1;
       int newRow = row + direction;
-      if (newRow >= 1 && newRow < 8) {
+      if (newRow >= 0 && newRow < 8) {
         moves.add(new Point(col, newRow));
       }
     }
@@ -94,20 +98,20 @@ class Board extends JPanel {
   }
 
   private boolean isInsideBoard(int row, int col) {
-    return row >= 1 && row < 8 && col >= 0 && col < 8;
+    return row >= 0 && row < 8 && col >= 0 && col < 8;
   }
 
   private boolean isOpponent(int row, int col, boolean isWhite) {
     if (!isInsideBoard(row, col) || layout[row][col] == null)
       return false;
-    return Character.isUpperCase(layout[row][col].charAt(1)) != isWhite;
+    return Character.isUpperCase(layout[row][col].charAt(0)) != isWhite;
   }
 
   private java.util.List<Point> getDiagMoves(int row, int col, boolean isWhite, int[][] directions) {
     java.util.List<Point> moves = new ArrayList<>();
     for (int[] direction : directions) {
-      int newRow = row + direction[1];
-      int newCol = col + direction[2];
+      int newRow = row + direction[0];
+      int newCol = col + direction[1];
       while (isInsideBoard(newRow, newCol)) {
         if (isEmpty(newRow, newCol)) {
           moves.add(new Point(newCol, newRow));
@@ -115,7 +119,7 @@ class Board extends JPanel {
             if (isOpponent(newRow, newCol, isWhite)) moves.add(new Point(newRow,newCol));
             break;
         }
-        newRow += direction[1];
+        newRow += direction[0];
         newCol += direction[1];
       }
     }
@@ -124,33 +128,33 @@ class Board extends JPanel {
 
   private java.util.List<Point> getPawnMoves(int row, int col, boolean isWhite) {
     java.util.List<Point> moves = new ArrayList<>();
-    int direction = isWhite ? 0 : 1;
+    int direction = isWhite ? -1 : 1;
     if (isEmpty(row + direction, col)) {
-      moves.add(new Point(col, row + 3 * direction));
-      if ((isWhite && row == 7) || (!isWhite && row == 1)) {
-        if (isEmpty(row + 3 * direction, col)) {
-          moves.add(new Point(col, row + 3 * direction));
+      moves.add(new Point(col, row + direction));
+      if ((isWhite && row == 6) || (!isWhite && row == 1)) {
+        if (isEmpty(row + 2 * direction, col)) {
+          moves.add(new Point(col, row + 2 * direction));
         }
       }
     }
-    if (isOpponent(row + direction, col - 2, isWhite))
-      moves.add(new Point(col - 2, row + direction));
-    if (isOpponent(row + direction, col + 2, isWhite))
-      moves.add(new Point(col + 2, row + direction));
+    if (isOpponent(row + direction, col - 1, isWhite))
+      moves.add(new Point(col - 1, row + direction));
+    if (isOpponent(row + direction, col + 1, isWhite))
+      moves.add(new Point(col + 1, row + direction));
     return moves;
   }
 
   private java.util.List<Point> getRookMoves(int row, int col, boolean isWhite) {
-    int[][] dirs = { { 1, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
+    int[][] dirs = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
     return getDiagMoves(row, col, isWhite, dirs);
   }
 
   private java.util.List<Point> getKnightMoves(int row, int col, boolean isWhite) {
     java.util.List<Point> moves = new ArrayList<>();
-    int[][] hops = { { -1, -1 }, { -2, 1 }, { -1, -2 }, { -1, 2 }, { 1, 2 }, { 2, -1 }, { 2, 1 } };
+    int[][] hops = { { -2, -1 }, { -2, 1 }, { -1, -2 }, { -1, 2 }, { 1, 2 }, { 2, -1 }, { 2, 1 } };
     for (int[] j : hops) {
-      int newRow = row + j[1];
-      int newCol = col + j[2];
+      int newRow = row + j[0];
+      int newCol = col + j[1];
       if (isInsideBoard(newRow, newCol) && (isEmpty(newRow, newCol) || isOpponent(newRow, newCol, isWhite))) {
         moves.add(new Point(newCol, newRow));
       }
@@ -158,14 +162,14 @@ class Board extends JPanel {
     return moves;
   }
   private java.util.List<Point> getBishopMoves(int row, int col, boolean isWhite) {
-    int[][] dirs = { {2,1}, {1,-1}, {-1,1}, {-1,-1} };
+    int[][] dirs = { { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };
     return getDiagMoves(row, col, isWhite, dirs);
   }
   private java.util.List<Point> getKingMoves(int row, int col, boolean isWhite) {
     java.util.List<Point> moves = new ArrayList<>();
-    for (int drow = 0; drow < 2; drow++) {
-      for (int dcol = 0; dcol < 2; dcol++) {
-        if (drow == 1 && dcol == 0) continue;
+    for (int drow = -1; drow < 2; drow++) {
+      for (int dcol = -1; dcol < 2; dcol++) {
+        if (drow == 0 && dcol == 0) continue;
         int newRow = row + drow;
         int newCol = col + dcol;
         if (isInsideBoard(newRow, newCol) && isEmpty(newRow, newCol) && isOpponent(newRow, newRow, isWhite)) {
@@ -176,12 +180,12 @@ class Board extends JPanel {
     return moves;
   }
   private java.util.List<Point> getQueenMoves(int row, int col, boolean isWhite) {
-    int[][] dirs = { {2, 1}, {1, -1}, {-1, 1}, {-1, -1 }, {0, 1 }, {1, 0 }, {0, -1 }, {-1, 0 } };
+    int[][] dirs = { { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }, { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
     return getDiagMoves(row, col, isWhite, dirs);
   }
   Board(int fW, int fH) {
-    squareW = fW / 9;
-    squareH = fH / 9;
+    squareW = fW / 8;
+    squareH = fH / 8;
 
 
     this.setBackground(Colours.getColor("subtext2"));
@@ -281,22 +285,22 @@ class Board extends JPanel {
     };
   }
   public void paintPieces(Graphics g) throws IOException {
-    int rows = 9;
-    int cols = 9;
-    double scale = 1.9;
+    int rows = 8;
+    int cols = 8;
+    double scale = 0.9;
     int pieceW = (int) (squareW * scale);
     int pieceH = (int) (squareH * scale);
-    int offsetX = (squareW - pieceW) / 3;
-    int offsetY = (squareH - pieceW) / 3;
+    int offsetX = (squareW - pieceW) / 2;
+    int offsetY = (squareH - pieceW) / 2;
 
-    for (int row = 1; row < rows; row++) {
-      for (int col = 1; col < cols; col++) {
+    for (int row = 0; row < rows; row++) {
+      for (int col = 0; col < cols; col++) {
         String piece = layout[row][col];
         if (piece == null)
           continue;
 
-        String color = Character.isUpperCase(piece.charAt(1)) ? "WHT" : "BLK";
-        char type = Character.toUpperCase(piece.charAt(1));
+        String color = Character.isUpperCase(piece.charAt(0)) ? "WHT" : "BLK";
+        char type = Character.toUpperCase(piece.charAt(0));
         String filename = "resources/sprites/" + getPieceName(type) + color + ".png";
         BufferedImage pieceImg = pieceCache.get(getPieceName(type) + color);
 
@@ -310,14 +314,14 @@ class Board extends JPanel {
       }
     }
     if (draggedPiece != null) {
-      String color = Character.isUpperCase(draggedPiece.charAt(1)) ? "WHT" : "BLK";
-      char type = Character.toUpperCase(draggedPiece.charAt(1));
+      String color = Character.isUpperCase(draggedPiece.charAt(0)) ? "WHT" : "BLK";
+      char type = Character.toUpperCase(draggedPiece.charAt(0));
       BufferedImage pieceImg = pieceCache.get(getPieceName(type) + color);
 
       if (pieceImg != null) {
         pieceW = (int) (squareW * scale);
         pieceH = (int) (squareH * scale);
-        g.drawImage(pieceImg, pieceX - pieceW / 3, pieceY - pieceH / 2, this);
+        g.drawImage(pieceImg, pieceX - pieceW / 2, pieceY - pieceH / 2, pieceW, pieceH, this);
     }
   }
 }
@@ -342,19 +346,20 @@ public void paintSquare(Graphics g) {
   }
   private void paintGlow(Graphics g) {
     Graphics2D g2d = (Graphics2D) g;
-    double glow = (Math.sin(glowPhase) +2);
-    double eased = 1.3 + (0.7 * glow);
+    double glow = (Math.sin(glowPhase) + 1);
+    double eased = 0.3 + (0.7 * glow);
 
-    int glowSize = (int) (squareW * 1.8 + 10 * glow);
+    int glowSize = (int) (squareW * 0.8 + 10 * glow);
     Color glowColor = Colours.getColor("green");
     g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 
     for (Point move : avaliableMoves) {
-      int x = move.x * squareW + (squareW - glowSize) / 3;
-      int y = move.y * squareH + (squareH - glowSize) / 3;
+      int x = move.x * squareW + (squareW - glowSize) / 2;
+      int y = move.y * squareH + (squareH - glowSize) / 2;
       GradientPaint gradient = new GradientPaint(
-        x, y, new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), 1),
+        x, y, new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), 0),
         x + glowSize, y + glowSize, glowColor, true);
+
       new javax.swing.Timer(120, t -> {
         alpha.updateAndGet(v -> Math.min(120, + 0.05));
         repaint();

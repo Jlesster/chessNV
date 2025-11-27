@@ -41,8 +41,8 @@ public class StartMenu extends JDialog {
     continueButton.addActionListener(e -> {
       try {
         sl.loadGame();
-        dispose();
         gameDecided = true;
+        SwingUtilities.invokeLater(this::dispose);
       } catch (Exception q) {
           System.err.println("Error loading game");
       }
@@ -50,10 +50,11 @@ public class StartMenu extends JDialog {
     exitButton.addActionListener(e -> {
       dispose();
       System.exit(0);
+      SwingUtilities.invokeLater(this::dispose);
     });
     newGame.addActionListener(e -> {
-      dispose();
       gameDecided = true;
+      SwingUtilities.invokeLater(this::dispose);
     });
   }
 
