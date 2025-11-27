@@ -1,20 +1,22 @@
 package com.jless.chess;
 
 import javax.swing.*;
-
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.*;
-import java.nio.file.*;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import static javax.imageio.ImageIO.read;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class UI extends JFrame {
+  JMenuBar menu = new JMenuBar();
+  JMenu session = new JMenu("Session");
+  JMenuItem exit = new JMenuItem("Exit and Save");
+  JMenuItem glow = new JMenuItem("Enable Glow");
+  Board board = new Board();
+
+
   public void body() {
     StartMenu startMenu = new StartMenu(this);
     Login login = new Login(startMenu);
@@ -27,39 +29,42 @@ public class UI extends JFrame {
         startGame();
       }
     }
-    // if (login.loggedIn && startMenu.gameDecided) {
-    //   startGame();
-    // }
+    //Save Game stuff
     this.addWindowListener(new java.awt.event.WindowAdapter() {
       @Override
       public void windowClosing(java.awt.event.WindowEvent wE) {
         if (Board.layout != null) sl.saveGame();
         System.exit(1);
       }
-
     });
   }
-  public void startGame(){
-    JMenuBar menu = new JMenuBar();
-    JMenu session = new JMenu("Session");
-    JMenuItem exit = new JMenuItem("Exit and Save");
-    JMenuItem glow = new JMenuItem("Enable Glow");
+  public void startGame() {
     session.add(glow);
     session.add(exit);
 
     setVisible(true);
-    setSize(800, 800);
+    setSize(800, 820);
     menu.add(session);
     setResizable(false);
     setLocationRelativeTo(null);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    add(new Board(this.getWidth(), this.getHeight()));
-    add(menu, BorderLayout.NORTH);
+    setJMenuBar(menu);
+    add(board);
+    pack();
     revalidate();
     repaint();
   }
+  public void menuLogic() {
+    exit.addActionListener(e -> {
+      System.exit(0);
+    });
+    glow.addActionListener(e -> {
+      board.allowHint = !board.allowHint;
+    });
+  }
   public void runtime() {
     body();
+    menuLogic();
   }
 }
 
@@ -70,7 +75,8 @@ class Board extends JPanel {
   public static boolean whiteTurn = true;
   private int dragStartCol = -1;
   private int dragStartRow = -1;
-  private boolean allowGlow = true;
+  public boolean allowHint = true;
+  public boolean allowGlow = true;
   private double glowPhase = 1;
   private Timer glowTimer;
   private int squareW;
@@ -190,9 +196,9 @@ class Board extends JPanel {
     return getDiagMoves(row, col, isWhite, dirs);
   }
 
-  Board(int fW, int fH) {
-    squareW = fW / 8;
-    squareH = fH / 8;
+  Board() {
+    squareW = 800 / 8;
+    squareH = 800 / 8;
 
 
     this.setBackground(Colours.getColor("subtext2"));
@@ -277,6 +283,10 @@ class Board extends JPanel {
         }
       }
     });
+  }
+  @Override
+  public Dimension getPreferredSize() {
+    return new Dimension(800, 800);
   }
 
   public static final String[][] layout = {
@@ -382,7 +392,9 @@ public void paintSquare(Graphics g) {
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
     paintSquare(g);
-    paintGlow(g);
+    if (allowHint) {
+      paintGlow(g);
+    }
     try {
       paintPieces(g);
     } catch (IOException e) {
