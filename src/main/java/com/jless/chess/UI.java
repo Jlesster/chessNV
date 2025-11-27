@@ -40,12 +40,21 @@ public class UI extends JFrame {
     });
   }
   public void startGame(){
+    JMenuBar menu = new JMenuBar();
+    JMenu session = new JMenu("Session");
+    JMenuItem exit = new JMenuItem("Exit and Save");
+    JMenuItem glow = new JMenuItem("Enable Glow");
+    session.add(glow);
+    session.add(exit);
+
     setVisible(true);
     setSize(800, 800);
+    menu.add(session);
     setResizable(false);
     setLocationRelativeTo(null);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     add(new Board(this.getWidth(), this.getHeight()));
+    add(menu, BorderLayout.NORTH);
     revalidate();
     repaint();
   }
@@ -70,7 +79,6 @@ class Board extends JPanel {
   private int pieceY;
 
   private java.util.List<Point> avaliableMoves = new java.util.ArrayList<>();
-
   private java.util.List<Point> getAvaliableMoves(int row, int col, String piece) {
     java.util.List<Point> moves = new ArrayList<>();
     char type = Character.toUpperCase(piece.charAt(0));
@@ -126,7 +134,6 @@ class Board extends JPanel {
     }
     return moves;
     }
-
   private java.util.List<Point> getPawnMoves(int row, int col, boolean isWhite) {
     java.util.List<Point> moves = new ArrayList<>();
     int direction = isWhite ? -1 : 1;
@@ -144,12 +151,10 @@ class Board extends JPanel {
       moves.add(new Point(col + 1, row + direction));
     return moves;
   }
-
   private java.util.List<Point> getRookMoves(int row, int col, boolean isWhite) {
     int[][] dirs = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
     return getDiagMoves(row, col, isWhite, dirs);
   }
-
   private java.util.List<Point> getKnightMoves(int row, int col, boolean isWhite) {
     java.util.List<Point> moves = new ArrayList<>();
     int[][] hops = { { -2, -1 }, { -2, 1 }, { -1, -2 }, { -1, 2 }, { 1, 2 }, { 2, -1 }, { 2, 1 } };
@@ -184,16 +189,11 @@ class Board extends JPanel {
     int[][] dirs = { { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }, { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
     return getDiagMoves(row, col, isWhite, dirs);
   }
+
   Board(int fW, int fH) {
     squareW = fW / 8;
     squareH = fH / 8;
 
-    JMenuBar menu = new JMenuBar();
-    JMenu session = new JMenu("Session");
-    JMenuItem exit = new JMenuItem("Exit and Save");
-    JMenuItem glow = new JMenuItem("Enable Glow");
-    session.add(exit, glow);
-    menu.add(session);
 
     this.setBackground(Colours.getColor("subtext2"));
     String[] pieces = {"Pawn", "Rook", "Bishop", "Queen", "King", "Knight"};
@@ -278,6 +278,7 @@ class Board extends JPanel {
       }
     });
   }
+
   public static final String[][] layout = {
     { "r",  "k",  "b",  "q",  "i",  "b",  "k",  "r"   },
     { "p",  "p",  "p",  "p",  "p",  "p",  "p",  "p"   },
