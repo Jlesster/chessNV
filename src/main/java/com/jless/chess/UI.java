@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.*;
+import java.nio.file.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,12 +40,12 @@ public class UI extends JFrame {
     });
   }
   public void startGame(){
-    this.add(new Board(this.getWidth(), this.getHeight()));
-    this.setVisible(true);
-    this.setSize(800, 800);
-    this.setLocationRelativeTo(null);
-    this.setResizable(false);
-    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setVisible(true);
+    setSize(800, 800);
+    setResizable(false);
+    setLocationRelativeTo(null);
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    add(new Board(this.getWidth(), this.getHeight()));
     revalidate();
     repaint();
   }
@@ -194,7 +195,7 @@ class Board extends JPanel {
 
     for (String color : colors) {
       for (String piece : pieces) {
-        String resourceName = "/sprites/" + piece + color + ".png";
+        String resourceName = "sprites/" + piece + color + ".png";
         try (java.io.InputStream in = UI.class.getClassLoader().getResourceAsStream(resourceName)){
           if (in != null) {
             BufferedImage img = ImageIO.read(in);
@@ -211,7 +212,7 @@ class Board extends JPanel {
         int col = e.getX() / squareW;
         int row = e.getY() / squareH;
         String selected = layout[row][col];
-        boolean isWhite = Character.isUpperCase(selected.charAt(1));
+        boolean isWhite = Character.isUpperCase(selected.charAt(0));
         if (selected == null)
           return;
         if ((whiteTurn && isWhite) || (!whiteTurn && isWhite)) {
@@ -301,7 +302,7 @@ class Board extends JPanel {
 
         String color = Character.isUpperCase(piece.charAt(0)) ? "WHT" : "BLK";
         char type = Character.toUpperCase(piece.charAt(0));
-        String filename = "resources/sprites/" + getPieceName(type) + color + ".png";
+        String filename = "sprites/" + getPieceName(type) + color + ".png";
         BufferedImage pieceImg = pieceCache.get(getPieceName(type) + color);
 
         if(pieceImg == null) {
@@ -338,8 +339,8 @@ public void paintSquare(Graphics g) {
           g.setColor(Colours.getColor("mantle"));
           g.fillRect(x, y, squareW, squareH);
         } else {
-          g.setColor(Colours.getColor("subtext1"));
-          g.drawRect(x, y, squareW, squareH);
+          g.setColor(Colours.getColor("lavender"));
+          g.fillRect(x, y, squareW, squareH);
         }
       }
     }
