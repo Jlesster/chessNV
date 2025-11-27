@@ -215,7 +215,7 @@ class Board extends JPanel {
         boolean isWhite = Character.isUpperCase(selected.charAt(0));
         if (selected == null)
           return;
-        if ((whiteTurn && isWhite) || (!whiteTurn && isWhite)) {
+        if ((whiteTurn && !isWhite) || (!whiteTurn && isWhite)) {
           return;
         }
         draggedPiece = selected;
