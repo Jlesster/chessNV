@@ -12,6 +12,9 @@ $(warning No <mainClass> found! Defaulting.)
 MAIN_CLASS = com.jless.chess.App
 endif
 
+print-main-class:
+	@echo $(MAIN_CLASS)
+
 MVN_RUN := mvn -q exec:java -Dexec.mainClass=$(MAIN_CLASS)
 
 all:

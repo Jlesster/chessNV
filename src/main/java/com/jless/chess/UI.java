@@ -131,7 +131,7 @@ class Board extends JPanel {
         if (isEmpty(newRow, newCol)) {
           moves.add(new Point(newCol, newRow));
     } else {
-            if (isOpponent(newRow, newCol, isWhite)) moves.add(new Point(newRow,newCol));
+            if (isOpponent(newRow, newCol, isWhite)) moves.add(new Point(newCol, newRow));
             break;
         }
         newRow += direction[0];
@@ -163,7 +163,7 @@ class Board extends JPanel {
   }
   private java.util.List<Point> getKnightMoves(int row, int col, boolean isWhite) {
     java.util.List<Point> moves = new ArrayList<>();
-    int[][] hops = { { -2, -1 }, { -2, 1 }, { -1, -2 }, { -1, 2 }, { 1, 2 }, { 2, -1 }, { 2, 1 } };
+    int[][] hops = { { -2, -1 }, { -2, 1 }, { -1, -2 }, { -1, 2 }, {1, -2},{ 1, 2 }, { 2, -1 }, { 2, 1 } };
     for (int[] j : hops) {
       int newRow = row + j[0];
       int newCol = col + j[1];
@@ -184,8 +184,8 @@ class Board extends JPanel {
         if (drow == 0 && dcol == 0) continue;
         int newRow = row + drow;
         int newCol = col + dcol;
-        if (isInsideBoard(newRow, newCol) && isEmpty(newRow, newCol) && isOpponent(newRow, newRow, isWhite)) {
-          moves.add(new Point(newRow, newCol));
+        if (isInsideBoard(newRow, newCol) && isEmpty(newRow, newCol) && isOpponent(newRow, newCol, isWhite)) {
+          moves.add(new Point(newCol, newRow));
         }
       }
     }
