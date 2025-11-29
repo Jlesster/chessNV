@@ -11,7 +11,7 @@ public class Board extends JPanel {
   public static boolean whiteTurn = true;
   private int dragStartCol = -1;
   private int dragStartRow = -1;
-  public boolean allowHint = true;
+  public boolean allowHint = false;
   public boolean allowGlow = true;
   private double glowPhase = 1;
   private Timer glowTimer;
@@ -20,7 +20,7 @@ public class Board extends JPanel {
   private int pieceX;
   private int pieceY;
   Pieces pieces;
-  UI ui = new UI();
+  UI ui;
 
   public Board() {
     squareW = 800 / 8;
@@ -28,7 +28,7 @@ public class Board extends JPanel {
     this.setBackground(Colours.getColor("subtext2"));
 
     pieces = new Pieces(this);
-    if (ui.allowGlow) {
+    if (allowHint) {
       glowTimer = new Timer(30, e -> {
         glowPhase += 0.15;   // controls speed of pulsing
         if (glowPhase > Math.PI * 2) glowPhase = 0;
@@ -192,7 +192,7 @@ public class Board extends JPanel {
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
     paintSquare(g);
-    if (allowHint) {
+    if (allowHint && allowGlow) {
       paintGlow(g);
     }
     try {
