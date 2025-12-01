@@ -11,7 +11,7 @@ public class Board extends JPanel {
   public static boolean whiteTurn = true;
   private int dragStartCol = -1;
   private int dragStartRow = -1;
-  public boolean allowHint = false;
+  public boolean allowHint = true;
   public boolean allowGlow = true;
   private double glowPhase = 1;
   private Timer glowTimer;

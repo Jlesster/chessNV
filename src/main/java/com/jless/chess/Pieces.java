@@ -10,6 +10,7 @@ public class Pieces {
   private Board board;
   public final java.util.Map<String, BufferedImage> pieceCache = new java.util.HashMap<>();
   public java.util.List<Point> avaliableMoves = new java.util.ArrayList<>();
+
   public java.util.List<Point> getAvaliableMoves(int row, int col, String piece) {
     java.util.List<Point> moves = new ArrayList<>();
     char type = Character.toUpperCase(piece.charAt(0));
@@ -52,12 +53,15 @@ public class Pieces {
     for (int[] direction : directions) {
       int newRow = row + direction[0];
       int newCol = col + direction[1];
+      int value = 0;
       while (isInsideBoard(newRow, newCol)) {
         if (isEmpty(newRow, newCol)) {
           moves.add(new Point(newCol, newRow));
-        } else {
-            if (isOpponent(newRow, newCol, isWhite)) moves.add(new Point(newCol, newRow));
-            break;
+        } else if (isOpponent(newRow, newCol, isWhite)) {
+          moves.add(new Point(newCol, newRow));
+          getPieceValue(type);
+          System.out.println(value);
+          break;
           }
         newRow += direction[0];
         newCol += direction[1];
@@ -149,6 +153,17 @@ public class Pieces {
       case 'P' -> "Pawn";
       case 'I' -> "King";
       default -> "Unknown";
+    };
+  }
+  public int getPieceValue(char type){
+    return switch (type) {
+      case 'P' -> 10;
+      case 'B' -> 30;
+      case 'K' -> 30;
+      case 'Q' -> 90;
+      case 'R' -> 50;
+      case 'I' -> 900;
+      default -> 0;
     };
   }
 }

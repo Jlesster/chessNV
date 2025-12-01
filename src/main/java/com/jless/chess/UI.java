@@ -6,7 +6,7 @@ public class UI extends JFrame {
   JMenuBar menu = new JMenuBar();
   JMenu session = new JMenu("Session");
   JMenuItem exit = new JMenuItem("Exit and Save");
-  JMenuItem glow = new JMenuItem("Enable Glow");
+  JMenuItem glow = new JMenuItem("Disable Glow");
   Board board = new Board();
 
   public void body() {
@@ -52,6 +52,11 @@ public class UI extends JFrame {
     });
     glow.addActionListener(e -> {
       board.allowHint = !board.allowHint;
+      if (board.allowHint) {
+        glow.setText("Disable Glow");
+      } else {
+        glow.setText("Enable Glow");
+      }
     });
   }
   public void runtime() {
