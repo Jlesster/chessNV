@@ -12,7 +12,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="/home/jless/.local/share/nvim/mason/packages/openjdk-17/jdk-17.0.2/lib"/>
-    <property name="sun.java.command" value="/home/jless/JavaProjects/ChessNV/target/surefire/surefirebooter-20251130202016246_3.jar /home/jless/JavaProjects/ChessNV/target/surefire 2025-11-30T20-20-16_198-jvmRun1 surefire-20251130202016246_1tmp surefire_0-20251130202016246_2tmp"/>
+    <property name="sun.java.command" value="/home/jless/JavaProjects/ChessNV/target/surefire/surefirebooter-20251201125703894_3.jar /home/jless/JavaProjects/ChessNV/target/surefire 2025-12-01T12-57-03_845-jvmRun1 surefire-20251201125703894_1tmp surefire_0-20251201125703894_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/home/jless/JavaProjects/ChessNV/target/test-classes:/home/jless/JavaProjects/ChessNV/target/classes:/home/jless/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.17.2/jackson-core-2.17.2.jar:/home/jless/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.17.2/jackson-databind-2.17.2.jar:/home/jless/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.17.2/jackson-annotations-2.17.2.jar:/home/jless/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.11.0/junit-jupiter-api-5.11.0.jar:/home/jless/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/home/jless/.m2/repository/org/junit/platform/junit-platform-commons/1.11.0/junit-platform-commons-1.11.0.jar:/home/jless/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/home/jless/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.11.0/junit-jupiter-params-5.11.0.jar:"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -27,7 +27,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="/home/jless/JavaProjects/ChessNV/target/surefire/surefirebooter-20251130202016246_3.jar"/>
+    <property name="surefire.real.class.path" value="/home/jless/JavaProjects/ChessNV/target/surefire/surefirebooter-20251201125703894_3.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="17.0.2+8-86"/>
     <property name="user.name" value="jless"/>

@@ -11,7 +11,6 @@ import java.nio.file.*;
 public class Login extends JDialog {
   public boolean loggedIn = false;
   private String loggedAcc = null;
-  private int minCharCreds = 3;
 
   private HashMap<String, String> users = new HashMap<>();
   private Path accountsFile = Paths.get(System.getProperty("user.home"), ".chesnv", "accounts.txt");
