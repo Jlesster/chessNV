@@ -13,7 +13,7 @@ public class Login extends JDialog {
   private String loggedAcc = null;
 
   private HashMap<String, String> users = new HashMap<>();
-  private Path accountsFile = Paths.get(System.getProperty("user.home"), ".chesnv", "accounts.txt");
+  private Path accountsFile = Paths.get(System.getProperty("user.home"), ".chessnv", "accounts.txt");
 
   public void register(String username, String password) {
     if (!username.isBlank() && !password.isBlank()) {

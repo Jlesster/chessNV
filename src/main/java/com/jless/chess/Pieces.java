@@ -34,7 +34,7 @@ public class Pieces {
   }
 
   private boolean isEmpty(int row, int col) {
-    return isInsideBoard(row, col) && board.layout[row][col] == null;
+    return isInsideBoard(row, col) && Board.layout[row][col] == null;
   }
 
   private boolean isInsideBoard(int row, int col) {
@@ -42,9 +42,9 @@ public class Pieces {
   }
 
   private boolean isOpponent(int row, int col, boolean isWhite) {
-    if (!isInsideBoard(row, col) || board.layout[row][col] == null)
+    if (!isInsideBoard(row, col) || Board.layout[row][col] == null)
       return false;
-    return Character.isUpperCase(board.layout[row][col].charAt(0)) != isWhite;
+    return Character.isUpperCase(Board.layout[row][col].charAt(0)) != isWhite;
   }
 
   private java.util.List<Point> getDiagMoves(int row, int col, boolean isWhite, int[][] directions) {

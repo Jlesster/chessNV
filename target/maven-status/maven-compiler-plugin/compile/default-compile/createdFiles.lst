@@ -6,8 +6,8 @@ com/jless/chess/LF.class
 com/jless/chess/SavingLoading.class
 com/jless/chess/Board.class
 com/jless/chess/Board$1.class
-com/jless/chess/AIBase.class
 com/jless/chess/Board$2.class
 com/jless/chess/Pieces.class
 com/jless/chess/StartMenu.class
+com/jless/chess/Moves.class
 com/jless/chess/Login.class
