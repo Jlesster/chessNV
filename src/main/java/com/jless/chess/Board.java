@@ -36,36 +36,6 @@ public class Board extends JPanel {
       });
       glowTimer.start();
     }
-    // public java.util.List<Move> generateMoves(boolean whiteToMove) {
-    //   java.util.List<Move> moves= new ArrayList<>();
-    //
-    //   for (int row = 0; row < 8; row++) {
-    //     for (int col = 0; col < 8; col++) {
-    //       String piece = layout[row][col];
-    //       if (piece == null) continue;
-    //
-    //       boolean pieceIsWhite = Character.isUpperCase(piece.charAt(0));
-    //       if (pieceIsWhite != whiteToMove) continue;
-    //       List<Point> rawMoves = piece.getAvaliableMoves(row, col, piece);
-    //
-    //       for (Point p : rawMoves) {
-    //         int toCol = p.x;
-    //         int toRow = p.y;
-    //
-    //         String captured = layout[toRow][toCol];
-    //
-    //         Move m = new Move(
-    //           row,
-    //           col,
-    //           toRow,
-    //           toCol,
-    //           piece,
-    //           captured
-    //         );
-    //       }
-    //     }
-    //   }
-    // }
 
     addMouseListener(new MouseAdapter() {
       public void mousePressed(MouseEvent e) {
